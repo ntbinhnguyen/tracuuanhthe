@@ -53,8 +53,8 @@ class ImageSearchApp {
         this.isSearching = true;
         this.showLoading();
 
-        // Ghép đường dẫn tới ảnh. Ví dụ: ./hinhanh/12345678.jpg
-        const imageUrl = `${this.IMAGE_FOLDER}/${imageId}.jpg`;
+        // Ghép đường dẫn tới ảnh. Ví dụ: ./hinhanh/12345678.JPG
+        const imageUrl = `${this.IMAGE_FOLDER}/${imageId}.JPG`;
 
         try {
             await this.displayImage(imageUrl, imageId);
@@ -111,7 +111,7 @@ class ImageSearchApp {
     downloadImage() {
         const link = document.createElement("a");
         link.href = this.resultImage.src;
-        link.download = `${this.imageIdInput.value.trim()}.jpg`;
+        link.download = `${this.imageIdInput.value.trim()}.JPG`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
