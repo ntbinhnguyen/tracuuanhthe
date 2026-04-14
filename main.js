@@ -8,7 +8,7 @@ class ImageSearchApp {
         // 👇 CẤU HÌNH THƯ MỤC CỦA BẠN TẠI ĐÂY 👇
         // Điền chính xác tên các thư mục con bạn đã tạo trong thư mục 'hinhanh'.
         // Dấu "" (rỗng) là để dặn code tìm cả ở thư mục 'hinhanh' bên ngoài cùng.
-        this.SUB_FOLDERS = ["lop10", "lop11", "lop12", ""]; 
+        this.SUB_FOLDERS = ["12TN1", "12TN2", "12TN3", "12XH1", "12XH2A", "12XH2B", "12XH2C", "12XH3", ""]; 
         
         this.isSearching = false;
         this.initializeElements();
