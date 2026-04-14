@@ -1,11 +1,14 @@
 /**
- * Image Search App - Phiên bản Web Tĩnh (Không API, Không Server)
- * Đọc ảnh trực tiếp từ thư mục cùng cấp
+ * Image Search App - Phiên bản Web Tĩnh (Hỗ trợ chia thư mục con)
  */
 class ImageSearchApp {
     constructor() {
-        // Tên thư mục chứa ảnh (đặt cùng chỗ với file html)
         this.IMAGE_FOLDER = "./hinhanh"; 
+        
+        // 👇 CẤU HÌNH THƯ MỤC CỦA BẠN TẠI ĐÂY 👇
+        // Điền chính xác tên các thư mục con bạn đã tạo trong thư mục 'hinhanh'.
+        // Dấu "" (rỗng) là để dặn code tìm cả ở thư mục 'hinhanh' bên ngoài cùng.
+        this.SUB_FOLDERS = ["lop10", "lop11", "lop12", ""]; 
         
         this.isSearching = false;
         this.initializeElements();
@@ -53,34 +56,54 @@ class ImageSearchApp {
         this.isSearching = true;
         this.showLoading();
 
-        // Ghép đường dẫn tới ảnh. Ví dụ: ./hinhanh/12345678.JPG
-        const imageUrl = `${this.IMAGE_FOLDER}/${imageId}.JPG`;
+        let foundImageUrl = null;
 
-        try {
-            await this.displayImage(imageUrl, imageId);
-        } catch (err) {
-            this.showError(`Không tìm thấy ảnh của mã: ${imageId}. Vui lòng kiểm tra lại.`);
-        } finally {
-            this.isSearching = false;
-            this.searchBtn.disabled = false;
+        // Tự động quét qua các thư mục con đã khai báo
+        for (const subFolder of this.SUB_FOLDERS) {
+            // Xây dựng đường dẫn: Nếu subFolder rỗng thì là ./hinhanh, nếu có thì là ./hinhanh/lop10
+            const basePath = subFolder ? `${this.IMAGE_FOLDER}/${subFolder}` : this.IMAGE_FOLDER;
+            const testUrl = `${basePath}/${imageId}.jpg`;
+
+            try {
+                // Thử kiểm tra xem file có tồn tại không
+                const exists = await this.checkImageExists(testUrl);
+                if (exists) {
+                    foundImageUrl = testUrl; // Đã tìm thấy!
+                    break; // Ngưng tìm kiếm các thư mục khác
+                }
+            } catch (err) {
+                // Lỗi (không tìm thấy ảnh ở thư mục này), tiếp tục vòng lặp
+            }
         }
+
+        if (foundImageUrl) {
+            await this.displayImage(foundImageUrl, imageId);
+        } else {
+            this.showError(`Không tìm thấy ảnh của mã: ${imageId}. Vui lòng kiểm tra lại.`);
+        }
+
+        this.isSearching = false;
+        this.searchBtn.disabled = false;
+    }
+
+    // Hàm phụ trợ để kiểm tra file ảnh có tồn tại trên GitHub không
+    checkImageExists(url) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => resolve(true);
+            img.onerror = () => resolve(false);
+            img.src = url;
+        });
     }
 
     async displayImage(url, imageId) {
-        return new Promise((resolve, reject) => {
-            // Trình duyệt sẽ thử tải ảnh từ URL
+        return new Promise((resolve) => {
             this.resultImage.onload = () => {
                 this.imageIdDisplay.textContent = `Mã: ${imageId}`;
                 this.imageTitle.textContent = "Đã tìm thấy ảnh";
                 this.showImageContainer();
                 resolve();
             };
-            // Nếu không có file ảnh đó, nó sẽ nhảy vào lỗi (onerror)
-            this.resultImage.onerror = () => {
-                reject(new Error("File không tồn tại"));
-            };
-            
-            // Gắn URL để kích hoạt quá trình tải
             this.resultImage.src = url; 
         });
     }
@@ -111,7 +134,7 @@ class ImageSearchApp {
     downloadImage() {
         const link = document.createElement("a");
         link.href = this.resultImage.src;
-        link.download = `${this.imageIdInput.value.trim()}.JPG`;
+        link.download = `${this.imageIdInput.value.trim()}.jpg`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
