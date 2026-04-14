@@ -62,7 +62,7 @@ class ImageSearchApp {
         for (const subFolder of this.SUB_FOLDERS) {
             // Xây dựng đường dẫn: Nếu subFolder rỗng thì là ./hinhanh, nếu có thì là ./hinhanh/lop10
             const basePath = subFolder ? `${this.IMAGE_FOLDER}/${subFolder}` : this.IMAGE_FOLDER;
-            const testUrl = `${basePath}/${imageId}.jpg`;
+            const testUrl = `${basePath}/${imageId}.JPG`;
 
             try {
                 // Thử kiểm tra xem file có tồn tại không
@@ -134,7 +134,7 @@ class ImageSearchApp {
     downloadImage() {
         const link = document.createElement("a");
         link.href = this.resultImage.src;
-        link.download = `${this.imageIdInput.value.trim()}.jpg`;
+        link.download = `${this.imageIdInput.value.trim()}.JPG`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
